@@ -3,52 +3,43 @@ const ctx = canvas.getContext("2d");
 
 
 //PONTOS FINAIS DA ARESTAS
-function desenharAresta(x1, y1, x2, y2){
-  let taxadoX = calcularTaxaX(x1, y1, x2, y2);
-  //console.log(taxadoX);
-  for (let i = y1; i < y2; i++) {
-    ctx.fillRect(x1, i, 1, 1);
-    x1 += taxadoX;
-  }
-  //TENHO QUE ARMAZENAR PRA FAZER O CALCULO DPS
 
-}
 class Triangulo {
   constructor(v1, v2, v3) {
     this.v1 = v1;
     this.v2 = v2;
     this.v3 = v3;
-    this.aresta12 = [[1,2], [2,3]];
-    this.aresta13 = [[1,2], [2,3]];
-    this.aresta23 = [[1,2], [2,3]];
+    this.aresta12 = this.calcVetorAresta(v1,v2);
+    this.aresta13 = this.calcVetorAresta(v1,v3);
+    this.aresta23 = this.calcVetorAresta(v2,v3);
+  }
+
+   calcVetorAresta(p1,p2){
+    let taxaX = calcularTaxaX(p1,p2);
+    let pontoAresta = []
+    let vetorAresta = []
+    let x, y;
+    x = p1[0]
+    for (y = p1[1]; y < p2[1]; y++) {
+      pontoAresta = [Math.round(x), y]   //ARRENDONDAR
+      x += taxaX;
+      vetorAresta.push(pontoAresta)
+    }
+    return vetorAresta;
   }
 }
 
 
-//PONTOS FINAIS DA ARESTAS
-function desenharAresta(p1, p2){
-  
-  /*
-  let taxadoX = calcularTaxaX([x1, y1], [x2, y2]);
-  //console.log(taxadoX);
-  for (let i = y1; i < y2; i++) {
-    ctx.fillRect(x1, i, 1, 1);
-    x1 += taxadoX;
-  } 
-  */
-  //TENHO QUE ARMAZENAR PRA FAZER O CALCULO DPS
-  
-  let taxadoX = calcularTaxaX(p1, p2);
-  //console.log(taxadoX);
-  let pontoX = p1[0];
-  for (let i = p1[1]; i < p2[1]; i++) {
-    ctx.fillRect(pontoX, i, 1, 1);
-    pontoX += taxadoX;
-  } 
 
+function desenharAresta(aresta){
+  let tamanhoAresta = aresta.length;
+  for (let i = 0; i < tamanhoAresta; i++) {
+    x = aresta[i][0];
+    y = aresta[i][1];
+    ctx.fillStyle = 'black';
+    ctx.fillRect(x, y, 1, 1);
+  } 
 }
-
-
 
 function ordenarPontos(v1, v2, v3){  //COLOCAR O PONTO MAIS ALTO EM 1 e o MAIS BAIXO EM 3- SE FOR IGUAL PREFERENCIA DA ORDEM
 
@@ -88,33 +79,16 @@ function ordenarPontos(v1, v2, v3){  //COLOCAR O PONTO MAIS ALTO EM 1 e o MAIS B
 }
 
 function calcularTaxaX(p1, p2){
-
-  /*/console.log(difY);
-  let difX = x2 - x1;
-  let difY = y2 - y1;
-  /*/ 
   let difX = p2[0] - p1[0];
   let difY = p2[1] - p1[1];
-
-  //
-  //console.log(difX);
   let taxaX = difX/difY;
-  //console.log(taxaX);
   return taxaX;
 }
 
 function desenharTrianguloExemplo(triangulo) {
-  desenharAresta(
-    triangulo.v1, 
-    triangulo.v2);
-
-  desenharAresta(
-    triangulo.v1, 
-    triangulo.v3);
-
-  desenharAresta(
-    triangulo.v2, 
-    triangulo.v3);
+  desenharAresta(triangulo.aresta12)
+  desenharAresta(triangulo.aresta13)
+  desenharAresta(triangulo.aresta23)
 }
 
 function totalScanLines(p1, p3){
@@ -122,12 +96,31 @@ function totalScanLines(p1, p3){
   return total;
 }
 
-function desenharScanLines(p1, p3){
-  let total = totalScanLines(p1, p3)
-  for (let i = p1[1]; i < p3[1]; i++) {
-    ctx.fillRect(p1[0]+5, i, 1, 1);
+function scanLines(triangulo) {
+
+  let v1 = triangulo.v1;
+  let v2 = triangulo.v2;
+  let v3 = triangulo.v3;
+
+  let totalSL = totalScanLines(v1, v3);
+
+  let minX = Math.min(v1[0], v2[0], v3[0]);
+  let maxX = Math.max(v1[0], v2[0], v3[0]);
+
+  let minY = Math.min(v1[1], v2[1], v3[1]);
+  let maxY = Math.max(v1[1], v2[1], v3[1]);
+
+
+
+  for (let y = minY; y < maxY; y++) {
+    for (let x = minX; x < maxX; x++) {
+      ctx.fillStyle = 'red';
+      ctx.fillRect(x, y, 1, 1);
+    }
   }
+
 }
+
 
 
 //PINTAR AS SCAN LINES
@@ -146,13 +139,11 @@ function createTriangulo(x1, y1, x2, y2, x3, y3){
 
 // TESTES
 function testeOrdenaTriangulo(){
-  const trianguloExemplo = createTriangulo(50, 10, 5, 490, 500, 450);
-  console.log(trianguloExemplo)
+  const trianguloExemplo = createTriangulo(50, 10, 5, 300, 500, 500);
+  scanLines(trianguloExemplo)
   desenharTrianguloExemplo(trianguloExemplo)
-  desenharScanLines(trianguloExemplo.v1, trianguloExemplo.v3)
+
 }
-
 testeOrdenaTriangulo()
-
 
 
