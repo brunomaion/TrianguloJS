@@ -102,6 +102,11 @@ function scanLines(triangulo) {
   let v2 = triangulo.v2;
   let v3 = triangulo.v3;
 
+  let aresta1 = triangulo.aresta12;
+  let aresta2 = triangulo.aresta13;
+  let aresta3 = triangulo.aresta23;
+  
+
   let totalSL = totalScanLines(v1, v3);
 
   let minX = Math.min(v1[0], v2[0], v3[0]);
@@ -112,12 +117,24 @@ function scanLines(triangulo) {
 
 
 
+
   for (let y = minY; y < maxY; y++) {
     for (let x = minX; x < maxX; x++) {
-      ctx.fillStyle = 'red';
+      ctx.fillStyle = 'pink';
       ctx.fillRect(x, y, 1, 1);
     }
   }
+
+  for (let y = minY; y < maxY; y++) {
+    for (let x = minX; x < maxX; x++) {
+      ctx.fillStyle = 'pink';
+      ctx.fillRect(x, y, 1, 1);
+
+    }
+  }
+
+
+  
 
 }
 
