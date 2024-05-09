@@ -18,19 +18,33 @@ class Triangulo {
     this.v1 = v1;
     this.v2 = v2;
     this.v3 = v3;
+    this.aresta12 = [[1,2], [2,3]];
+    this.aresta13 = [[1,2], [2,3]];
+    this.aresta23 = [[1,2], [2,3]];
   }
 }
 
 
 //PONTOS FINAIS DA ARESTAS
-function desenharAresta(x1, y1, x2, y2){
-  let taxadoX = calcularTaxaX(x1, y1, x2, y2);
+function desenharAresta(p1, p2){
+  
+  /*
+  let taxadoX = calcularTaxaX([x1, y1], [x2, y2]);
   //console.log(taxadoX);
   for (let i = y1; i < y2; i++) {
     ctx.fillRect(x1, i, 1, 1);
     x1 += taxadoX;
-  }
+  } 
+  */
   //TENHO QUE ARMAZENAR PRA FAZER O CALCULO DPS
+  
+  let taxadoX = calcularTaxaX(p1, p2);
+  //console.log(taxadoX);
+  let pontoX = p1[0];
+  for (let i = p1[1]; i < p2[1]; i++) {
+    ctx.fillRect(pontoX, i, 1, 1);
+    pontoX += taxadoX;
+  } 
 
 }
 
@@ -73,10 +87,16 @@ function ordenarPontos(v1, v2, v3){  //COLOCAR O PONTO MAIS ALTO EM 1 e o MAIS B
   return [pontoAlto, pontoMedio, pontoBaixo];
 }
 
-function calcularTaxaX(x1, y1, x2, y2){
-  let difY = y2 - y1;
-  //console.log(difY);
+function calcularTaxaX(p1, p2){
+
+  /*/console.log(difY);
   let difX = x2 - x1;
+  let difY = y2 - y1;
+  /*/ 
+  let difX = p2[0] - p1[0];
+  let difY = p2[1] - p1[1];
+
+  //
   //console.log(difX);
   let taxaX = difX/difY;
   //console.log(taxaX);
@@ -85,22 +105,16 @@ function calcularTaxaX(x1, y1, x2, y2){
 
 function desenharTrianguloExemplo(triangulo) {
   desenharAresta(
-    triangulo.v1[0], 
-    triangulo.v1[1], 
-    triangulo.v2[0], 
-    triangulo.v2[1]);
-  
+    triangulo.v1, 
+    triangulo.v2);
+
   desenharAresta(
-    triangulo.v1[0], 
-    triangulo.v1[1], 
-    triangulo.v3[0], 
-    triangulo.v3[1]);
-  
+    triangulo.v1, 
+    triangulo.v3);
+
   desenharAresta(
-    triangulo.v2[0], 
-    triangulo.v2[1], 
-    triangulo.v3[0], 
-    triangulo.v3[1]);
+    triangulo.v2, 
+    triangulo.v3);
 }
 
 function totalScanLines(p1, p3){
