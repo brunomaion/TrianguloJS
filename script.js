@@ -110,15 +110,18 @@ function scanLines(triangulo) {
   let maxX = Math.max(v1[0], v2[0], v3[0]);
   let minY = Math.min(v1[1], v2[1], v3[1]);
   let maxY = Math.max(v1[1], v2[1], v3[1]);
+
+  let nScans = maxY-minY;
   ///*
   
   let novaAresta1 = complementarAresta(aresta1);
+
+  console.log(novaAresta1[0]);
   //let novaAresta2 = complementarAresta(aresta2);
   //let novaAresta3 = complementarAresta(aresta3);
 
   function complementarAresta(aresta){ //FUNÇÃO PARA TORNAR 
     let tamAresta = aresta.length;
-    let nScans = maxY-minY;
     let novoVetor = [];
 
     if (aresta.length===nScans){ // SE FIR TAMANHO DA SCAN LINE
@@ -179,19 +182,26 @@ function scanLines(triangulo) {
     }
   }
 
+
+
   let scanLinesVetor = []
   let pontoMax, pontoMin;
 
-  for (let i = minY; i < maxY; i++) {
-
-    
-   
+  for (let y = 0; y < nScans; y++) {
+    for (let x = 0; x < maxX; x++) {
+      
+      if (aresta1[y]) {
+        let a =1;
+      } else {
+        
+      }
+    }
     
     pontoMax = Math.min(v1[1], v2[1], v3[1]);
     pontoMin = Math.max(v1[1], v2[1], v3[1]);
     scanLinesVetor.push([pontoMin, pontoMax]);
 
-  }
+  } 
 
 }
 
@@ -215,10 +225,11 @@ function createTriangulo(x1, y1, x2, y2, x3, y3){
 
 // TESTES
 function testeOrdenaTriangulo(){
-  const trianguloExemplo = createTriangulo(200, 20, 5, 450, 500, 500);
+  const trianguloExemplo = createTriangulo(200, 10, 5, 450, 500, 500);
   scanLines(trianguloExemplo)
   desenharTrianguloExemplo(trianguloExemplo)
 }
 testeOrdenaTriangulo()
 
 
+console.log(Math.max(NaN, 2, 50));
