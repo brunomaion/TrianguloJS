@@ -105,38 +105,97 @@ function scanLines(triangulo) {
   let aresta1 = triangulo.aresta12;
   let aresta2 = triangulo.aresta13;
   let aresta3 = triangulo.aresta23;
-  
-
-  let totalSL = totalScanLines(v1, v3);
 
   let minX = Math.min(v1[0], v2[0], v3[0]);
   let maxX = Math.max(v1[0], v2[0], v3[0]);
-
   let minY = Math.min(v1[1], v2[1], v3[1]);
   let maxY = Math.max(v1[1], v2[1], v3[1]);
-
-
-
-
-  for (let y = minY; y < maxY; y++) {
-    for (let x = minX; x < maxX; x++) {
-      ctx.fillStyle = 'pink';
-      ctx.fillRect(x, y, 1, 1);
-    }
-  }
-
-  for (let y = minY; y < maxY; y++) {
-    for (let x = minX; x < maxX; x++) {
-      ctx.fillStyle = 'pink';
-      ctx.fillRect(x, y, 1, 1);
-
-    }
-  }
-
-
+  ///*
   
+  let novaAresta1 = complementarAresta(aresta1);
+  //let novaAresta2 = complementarAresta(aresta2);
+  //let novaAresta3 = complementarAresta(aresta3);
+
+  function complementarAresta(aresta){ //FUNÇÃO PARA TORNAR 
+    let tamAresta = aresta.length;
+    let nScans = maxY-minY;
+    let novoVetor = [];
+
+    if (aresta.length===nScans){ // SE FIR TAMANHO DA SCAN LINE
+      //console.log('nao complementar');
+      for (let i = 0; i < tamAresta; i++) {
+        novoVetor.push(aresta[i][0])
+      }
+    }
+    else if (aresta[0][1]===minY){ //PONTO INICIAL NO MIN
+      //console.log('complementar no final');
+      let complemento = nScans-tamAresta;
+
+      //PRIMEIRO VETOR
+      for (let i = 0; i < tamAresta; i++) {
+        novoVetor.push(aresta[i][0])
+      }
+      //DPS COMPLEMENTO
+      for (let i = 0; i < complemento; i++) {
+        novoVetor.push(NaN)
+      }
+
+    }
+    else if (aresta[tamAresta-1][1]===(maxY-1)){ // PONTO FINAL NO MAX
+      //console.log('complementar no inicio');
+      let complemento = nScans-tamAresta;
+      //PRIMEIRO COMPLEMENTO 
+      for (let i = 0; i < complemento; i++) {
+        novoVetor.push(NaN)
+      }
+      //DPS VETOR
+      for (let i = 0; i < tamAresta; i++) {
+        novoVetor.push(aresta[i][0])
+      }
+
+      //TEST COMPLEMENTO
+
+
+
+    } 
+
+    /*
+    for (let i = 0; i < novoVetor.length; i++) {
+      if (novoVetor[i] != NaN) {
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(novoVetor[i], i, 1, 1);
+      }
+    }*/
+
+    return novoVetor;
+  }
+  //*/
+
+
+  for (let y = minY; y < maxY; y++) {
+    for (let x = minX; x < maxX; x++) {
+      ctx.fillStyle = 'pink';
+      ctx.fillRect(x, y, 1, 1);
+    }
+  }
+
+  let scanLinesVetor = []
+  let pontoMax, pontoMin;
+
+  for (let i = minY; i < maxY; i++) {
+
+    
+   
+    
+    pontoMax = Math.min(v1[1], v2[1], v3[1]);
+    pontoMin = Math.max(v1[1], v2[1], v3[1]);
+    scanLinesVetor.push([pontoMin, pontoMax]);
+
+  }
 
 }
+
+
 
 
 
@@ -156,10 +215,9 @@ function createTriangulo(x1, y1, x2, y2, x3, y3){
 
 // TESTES
 function testeOrdenaTriangulo(){
-  const trianguloExemplo = createTriangulo(50, 10, 5, 300, 500, 500);
+  const trianguloExemplo = createTriangulo(200, 20, 5, 450, 500, 500);
   scanLines(trianguloExemplo)
   desenharTrianguloExemplo(trianguloExemplo)
-
 }
 testeOrdenaTriangulo()
 
