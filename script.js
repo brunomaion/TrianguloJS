@@ -86,13 +86,16 @@ function calcularTaxaX(p1, p2){
 }
 
 function desenharTrianguloExemplo(triangulo) {
+  pintarTriangulo(triangulo)
   desenharAresta(triangulo.aresta12)
   desenharAresta(triangulo.aresta13)
   desenharAresta(triangulo.aresta23)
+  
 }
 
-function totalScanLines(p1, p3){
-  let total = p3[1] - p1[1]; 
+
+function totalScanLines(triangulo){
+  let total = triangulo.v3[1] - triangulo.v1[1]; 
   return total;
 }
 
@@ -115,10 +118,9 @@ function scanLines(triangulo) {
   ///*
   
   let novaAresta1 = complementarAresta(aresta1);
+  let novaAresta2 = complementarAresta(aresta2);
+  let novaAresta3 = complementarAresta(aresta3);
 
-  console.log(novaAresta1[0]);
-  //let novaAresta2 = complementarAresta(aresta2);
-  //let novaAresta3 = complementarAresta(aresta3);
 
   function complementarAresta(aresta){ //FUNÇÃO PARA TORNAR 
     let tamAresta = aresta.length;
@@ -174,38 +176,57 @@ function scanLines(triangulo) {
   }
   //*/
 
-
-  for (let y = minY; y < maxY; y++) {
-    for (let x = minX; x < maxX; x++) {
-      ctx.fillStyle = 'pink';
-      ctx.fillRect(x, y, 1, 1);
-    }
-  }
-
-
+  //console.log(novaAresta3);
 
   let scanLinesVetor = []
   let pontoMax, pontoMin;
 
   for (let y = 0; y < nScans; y++) {
-    for (let x = 0; x < maxX; x++) {
-      
-      if (aresta1[y]) {
-        let a =1;
-      } else {
-        
-      }
-    }
-    
-    pontoMax = Math.min(v1[1], v2[1], v3[1]);
-    pontoMin = Math.max(v1[1], v2[1], v3[1]);
-    scanLinesVetor.push([pontoMin, pontoMax]);
 
+    if (isNaN(novaAresta1[y])) {
+      pontoMax = Math.max(novaAresta2[y], novaAresta3[y]);
+      pontoMin = Math.min(novaAresta2[y], novaAresta3[y]);
+      scanLinesVetor.push([pontoMin, pontoMax]);
+    } 
+    if (isNaN(novaAresta2[y])) {
+      pontoMax = Math.max(novaAresta1[y], novaAresta3[y]);
+      pontoMin = Math.min(novaAresta1[y], novaAresta3[y]);
+      scanLinesVetor.push([pontoMin, pontoMax]);
+    } 
+    if (isNaN(novaAresta3[y])) {
+      pontoMax = Math.max(novaAresta1[y], novaAresta2[y]);
+      pontoMin = Math.min(novaAresta1[y], novaAresta2[y]);
+      scanLinesVetor.push([pontoMin, pontoMax]);
+    }
+
+    
   } 
 
+  return scanLinesVetor;
 }
 
+function pintarTriangulo(triangulo) {
+  let nScans = totalScanLines(triangulo)
+  let scanVetor = scanLines(triangulo)
 
+  let v1 = triangulo.v1;
+  let v2 = triangulo.v2;
+  let v3 = triangulo.v3;
+
+  let minY = Math.min(v1[1], v2[1], v3[1]);
+
+
+
+
+  for (let y = 1; y < nScans; y++) {
+    if(scanVetor[y][0] != scanVetor[y][1]){
+      for (let x = scanVetor[y][0]; x < scanVetor[y][1]; x++) {
+        ctx.fillStyle = 'pink';
+        ctx.fillRect(x, y+minY, 1, 1);
+      }
+    }
+  }
+}
 
 
 
@@ -226,10 +247,7 @@ function createTriangulo(x1, y1, x2, y2, x3, y3){
 // TESTES
 function testeOrdenaTriangulo(){
   const trianguloExemplo = createTriangulo(200, 10, 5, 450, 500, 500);
-  scanLines(trianguloExemplo)
   desenharTrianguloExemplo(trianguloExemplo)
 }
 testeOrdenaTriangulo()
 
-
-console.log(Math.max(NaN, 2, 50));
