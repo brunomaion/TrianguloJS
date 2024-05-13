@@ -9,9 +9,16 @@ class Triangulo {
     this.v1 = this.vetorOrdenado[0];
     this.v2 = this.vetorOrdenado[1];
     this.v3 = this.vetorOrdenado[2];
-    this.aresta12 = this.calcVetorAresta(this.v1,this.v2);
-    this.aresta13 = this.calcVetorAresta(this.v1,this.v3);
-    this.aresta23 = this.calcVetorAresta(this.v2,this.v3);
+
+    //CORES
+    this.corV1 = [255,0,0]
+    this.corV2 = [0,255,0]
+    this.corV3 = [0,0,255]
+
+
+    this.aresta12 = this.calcVetorAresta(this.v1,this.v2, this.corV1, this.corV2);
+    this.aresta13 = this.calcVetorAresta(this.v1,this.v3, this.corV1, this.corV3);
+    this.aresta23 = this.calcVetorAresta(this.v2,this.v3, this.corV2, this.corV3);
 
     this.minX = this.boxEnvolvente()[0];
     this.maxX = this.boxEnvolvente()[1];
@@ -19,14 +26,9 @@ class Triangulo {
     this.maxY = this.boxEnvolvente()[3];
 
     this.nScans = this.maxY-this.minY; // numero scanLines
-
-    //CORES
-    this.corAresta = this.rgb(0, 0, 0); //'black';
-    this.corV1 = 'red';
-    this.corV2 = 'green';
-    this.corV3 = 'blue';
     
   }
+
 
   rgb(r, g, b) {
     return "rgb(" + r + "," + g + "," + b + ")";
@@ -113,7 +115,7 @@ class Triangulo {
     return [minimoX, maximoX, minimoY, maximoY]
   }
 
-  calcVetorAresta(p1,p2){
+  calcVetorAresta(p1,p2, corP1, corP2){
     
     let taxaX = this.calcularTaxaX(p1,p2);
 
@@ -122,16 +124,24 @@ class Triangulo {
     let x, y;
     x = p1[0]
 
+    let taxaR = this.calcularTaxaCor(p1, p2, corP1[0], corP2[0])
+    let taxaG = this.calcularTaxaCor(p1, p2, corP1[1], corP2[1])
+    let taxaB = this.calcularTaxaCor(p1, p2, corP1[2], corP2[2])
+
+
+    let corInicial = [corP1[0], corP1[1], corP1[2]]
+
     for (y = p1[1]; y < p2[1]; y++) {
-      pontoAresta = [Math.round(x), y]   //ARRENDONDAR
+
+      let corPixel = [corInicial[0]+=taxaR, corInicial[1]+=taxaG, corInicial[2]+=taxaB];
+      pontoAresta = [Math.round(x), y, corPixel]   //ARRENDONDAR
       x += taxaX;
       vetorAresta.push(pontoAresta)
     }
 
-    //console.log(vetorAresta);
+
     return vetorAresta;
   }
-
 
   calcularTaxaX(p1, p2){
     let taxaX;
@@ -145,41 +155,61 @@ class Triangulo {
     return taxaX;
   }
 
-  calcularTaxaY(p1, p2){
-    let difX = p2[0] - p1[0];
+  
+  calcularTaxaCor(p1, p2, cor1, cor2){
     let difY = p2[1] - p1[1];
-    let taxaY = difY/difX;
+    let difCor = cor2-cor1;
+    let taxaY = difCor/difY;
     return taxaY;
   }
 
   //DESENHAR
   pintarTriangulo(triangulo) {
     let scanVetor = this.scanLines(triangulo)
-    console.log(scanVetor);
+    let corPixel;
+
+
+    function taxaCalculoCor(x1, x2, cor1, cor2){
+      let difCor = cor2-cor1;
+      let difX = x2-x1;
+      let taxaCor = difCor/difX;
+      return taxaCor;
+    }
+    
+
     for (let y = 0; y < triangulo.nScans-1; y++) {
-        for (let x = scanVetor[y][0]+1; x < scanVetor[y][1]; x++) { //scanVector [minX, maX]
-          ctx.fillStyle = 'pink';
-          ctx.fillRect(x, y+triangulo.minY, 1, 1);
-        }
+      let corR = scanVetor[y][2][0];
+      let corG = scanVetor[y][2][1];
+      let corB = scanVetor[y][2][2];
+      let taxaR = taxaCalculoCor(scanVetor[y][0], scanVetor[y][1], scanVetor[y][2][0], scanVetor[y][3][0])
+      let taxaG = taxaCalculoCor(scanVetor[y][0], scanVetor[y][1], scanVetor[y][2][1], scanVetor[y][3][1])
+      let taxaB = taxaCalculoCor(scanVetor[y][0], scanVetor[y][1], scanVetor[y][2][2], scanVetor[y][3][2])
+      
+      for (let x = scanVetor[y][0]; x < scanVetor[y][1]; x++) { //scanVector [minX, maX]
+        corPixel = this.rgb(corR+=taxaR, corG+=taxaG, corB+=taxaB)
+        ctx.fillStyle = corPixel;
+        ctx.fillRect(x, y+triangulo.minY, 1, 1);
+      }
       
     }
   }
 
   desenharAresta(aresta){
     let tamanhoAresta = aresta.length;
-    //console.log(aresta);
-    //console.log(tamanhoAresta);
     let x, y;
+
+    
     if(aresta!=0){
       for (let i = 1; i < tamanhoAresta-1; i++) {
         x = aresta[i][0];
         y = aresta[i][1];
-        ctx.fillStyle = this.corAresta;
+        ctx.fillStyle = this.rgb(aresta[i][2][0],aresta[i][2][1],aresta[i][2][2]);
         ctx.fillRect(x, y, 1, 1);
       } 
     } else{
-      //console.log('Nao Desenhar Aresta! X IGUAL');
     }
+
+    
 
   }
 
@@ -204,18 +234,18 @@ class Triangulo {
     } else {
 
       if (aresta.length===this.nScans){ // SE FIR TAMANHO DA SCAN LINE
-        //console.log('nao complementar');
         for (let i = 0; i < tamAresta; i++) {
-          novoVetor.push(aresta[i][0])
+          let aux = [aresta[i][0], aresta[i][2]]
+          novoVetor.push(aux)
         }
       }
       else if (aresta[0][1]===this.minY){ //PONTO INICIAL NO MIN
-        //console.log('complementar no final');
         let complemento = this.nScans-tamAresta;
-  
+
         //PRIMEIRO VETOR
         for (let i = 0; i < tamAresta; i++) {
-          novoVetor.push(aresta[i][0])
+          let aux = [aresta[i][0], aresta[i][2]]
+          novoVetor.push(aux)
         }
         //DPS COMPLEMENTO
         for (let i = 0; i < complemento; i++) {
@@ -231,7 +261,8 @@ class Triangulo {
         }
         //DPS VETOR
         for (let i = 0; i < tamAresta; i++) {
-          novoVetor.push(aresta[i][0])
+          let aux = [aresta[i][0], aresta[i][2]]
+          novoVetor.push(aux)
         }
   
       } 
@@ -252,26 +283,57 @@ class Triangulo {
     let novaAresta1 = this.complementarAresta(aresta1);
     let novaAresta2 = this.complementarAresta(aresta2);
     let novaAresta3 = this.complementarAresta(aresta3);
+
   
     let scanLinesVetor = []
     let pontoMax, pontoMin;
+
+    let corMinX;
+    let corMaxX;
   
     for (let y = 0; y < triangulo.nScans; y++) {
   
-      if (isNaN(novaAresta1[y])) {
-        pontoMax = Math.max(novaAresta2[y], novaAresta3[y]);
-        pontoMin = Math.min(novaAresta2[y], novaAresta3[y]);
-        scanLinesVetor.push([pontoMin, pontoMax]);
+      if (isNaN(novaAresta1[y][0])) {
+        pontoMax = Math.max(novaAresta2[y][0], novaAresta3[y][0]);
+        pontoMin = Math.min(novaAresta2[y][0], novaAresta3[y][0]);
+        
+        if (pontoMin==novaAresta2[y][0]) {
+          corMinX = novaAresta2[y][1];
+          corMaxX = novaAresta3[y][1];
+        } else {
+          corMinX = novaAresta3[y][1];
+          corMaxX = novaAresta2[y][1];
+        }
+        scanLinesVetor.push([pontoMin, pontoMax, corMinX, corMaxX]);
       } 
-      if (isNaN(novaAresta2[y])) {
-        pontoMax = Math.max(novaAresta1[y], novaAresta3[y]);
-        pontoMin = Math.min(novaAresta1[y], novaAresta3[y]);
-        scanLinesVetor.push([pontoMin, pontoMax]);
+
+      if (isNaN(novaAresta2[y][0])) {
+        pontoMax = Math.max(novaAresta1[y][0], novaAresta3[y][0]);
+        pontoMin = Math.min(novaAresta1[y][0], novaAresta3[y][0]);
+        if (pontoMin==novaAresta1[y][0]) {
+          corMinX = novaAresta1[y][1];
+          corMaxX = novaAresta3[y][1];
+        } else {
+          corMinX = novaAresta3[y][1];
+          corMaxX = novaAresta1[y][1];
+        }
+
+        scanLinesVetor.push([pontoMin, pontoMax, corMinX, corMaxX]);
       } 
-      if (isNaN(novaAresta3[y])) {
-        pontoMax = Math.max(novaAresta1[y], novaAresta2[y]);
-        pontoMin = Math.min(novaAresta1[y], novaAresta2[y]);
-        scanLinesVetor.push([pontoMin, pontoMax]);
+
+      if (isNaN(novaAresta3[y][0])) {
+        pontoMax = Math.max(novaAresta1[y][0], novaAresta2[y][0]);
+        pontoMin = Math.min(novaAresta1[y][0], novaAresta2[y][0]);
+
+        if (pontoMin==novaAresta1[y][0]) {
+          corMinX = novaAresta1[y][1];
+          corMaxX = novaAresta2[y][1];
+        } else {
+          corMinX = novaAresta2[y][1];
+          corMaxX = novaAresta1[y][1];
+        }
+
+        scanLinesVetor.push([pontoMin, pontoMax, corMinX, corMaxX]);
       }
   
       
@@ -292,12 +354,11 @@ function createTriangulo(x1, y1, x2, y2, x3, y3){
 
 // TESTES
 function testeTriangulo(){
-  const trianguloExemplo = createTriangulo(500, 450, 0, 450, 250, 0);
+  const trianguloExemplo = createTriangulo(0, 0, 0, 300, 400, 590);
   //trianguloExemplo.corAresta ='red'
-  //trianguloExemplo.desenharTriangulo(trianguloExemplo)
-  trianguloExemplo.desenharTodasArestas(trianguloExemplo)
-  trianguloExemplo.pintarTriangulo(trianguloExemplo)
-  //console.log(trianguloExemplo.aresta12);
+  trianguloExemplo.desenharTriangulo(trianguloExemplo)
+  //trianguloExemplo.desenharTodasArestas(trianguloExemplo)
+  //trianguloExemplo.pintarTriangulo(trianguloExemplo)
   //console.log(trianguloExemplo.aresta13);
   //console.log(trianguloExemplo.aresta23);
 }
