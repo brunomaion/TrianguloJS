@@ -361,90 +361,15 @@ function createTriangulo(x1, y1, x2, y2, x3, y3){
 
 
 // TESTES
-
-
-var listaTriangulos = []
-function adicionarTrianguloNovo(pontosCapturados){
-  const triangulo = createTriangulo( 
-    pontosCapturados[0][0], 
-    pontosCapturados[0][1], 
-    pontosCapturados[1][0],  
-    pontosCapturados[1][1], 
-    pontosCapturados[2][0], 
-    pontosCapturados[2][1], 
-  );
-  listaTriangulos.push(triangulo);
+function testeTriangulo(){
+  const trianguloExemplo = createTriangulo(200,0, 0, 300, 400, 50);
+  //trianguloExemplo.corAresta ='red'
+  //trianguloExemplo.desenharTriangulo(trianguloExemplo)
+  trianguloExemplo.pintarTriangulo(trianguloExemplo)
+  trianguloExemplo.desenharTodasArestas(trianguloExemplo)
+  //console.log(trianguloExemplo.aresta13);
+  //console.log(trianguloExemplo.aresta23);
 }
 
-// Adicione esta função para criar botões na barra lateral
-function criarBotaoTriangulo(triangulo, index) {
-  const lista = document.getElementById("trianglesList");
-  const botao = document.createElement("button");
-  botao.textContent = `Triângulo ${index + 1}`;
-  botao.addEventListener("click", function() {
-    exibirPropriedadesTriangulo(triangulo);
-  });
-  lista.appendChild(botao);
+testeTriangulo()
 
-  const botaoExcluir = document.createElement("button");
-  botaoExcluir.textContent = `Excluir`;
-  botaoExcluir.addEventListener("click", function() {
-    excluirTriangulo();
-  });
-  lista.appendChild(botaoExcluir);
-}
-
-// Adicione esta função para exibir as propriedades do triângulo ao clicar em um botão
-function exibirPropriedadesTriangulo(triangulo) {
-  alert(`Propriedades do Triângulo:
-    V1: (${triangulo.v1[0]}, ${triangulo.v1[1]})
-    V2: (${triangulo.v2[0]}, ${triangulo.v2[1]})
-    V3: (${triangulo.v3[0]}, ${triangulo.v3[1]})`);
-}
-
-// Modifique sua função renderizarTriangulo para criar os botões na barra lateral
-function renderizarTriangulo(listaTriangulos) {
-  const lista = document.getElementById("trianglesList");
-  lista.innerHTML = ""; // Limpa a lista antes de adicionar os botões
-
-  for (let i = 0; i < listaTriangulos.length; i++) {
-    listaTriangulos[i].pintarTriangulo(listaTriangulos[i]);
-    listaTriangulos[i].desenharTodasArestas(listaTriangulos[i]);
-    criarBotaoTriangulo(listaTriangulos[i], i); // Cria um botão para cada triângulo
-  }
-}
-// BOTOES
-var botaoAddTriangulo = document.getElementById("addTriangleBtn");
-botaoAddTriangulo.addEventListener("click", function() {
-  var pontosCapturados = [];
-  var pontosCapturadosCount = 0;
-
-  canvas.addEventListener("click", capturarPonto);
-
-  function capturarPonto(event) {
-    const x = event.offsetX;
-    const y = event.offsetY;
-    pontosCapturados.push([x, y]);
-    pontosCapturadosCount++;
-    if (pontosCapturadosCount === 3) {
-      canvas.removeEventListener("click", capturarPonto);
-      adicionarTrianguloNovo(pontosCapturados);
-    }
-    renderizarTriangulo(listaTriangulos);
-  }
-});
-
-function excluirTriangulo(index) {
-  // Remover o triângulo da lista com base no índice
-  listaTriangulos.splice(index, 1);
-  // Limpar a lista de botões na barra lateral
-  const lista = document.getElementById("trianglesList");
-  lista.innerHTML = "";
-  // Recarregar os botões na barra lateral
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  listaTriangulos.forEach((triangulo, index) => {
-    criarBotaoTriangulo(triangulo, index);
-    triangulo.desenharTriangulo(triangulo);
-  });
-  console.log("Triângulo excluído");
-}

@@ -1,0 +1,64 @@
+#canvas {
+  border: 1px solid black;
+  margin-bottom: 10px;
+}
+
+.vertex {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+#btnContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+#addTriangleBtn, #deleteTriangleBtn {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Estilos para a barra lateral */
+.sidebar {
+  width: 250px;
+  background-color: #f1f1f1;
+  padding: 20px;
+  position: fixed;
+  top: 0;
+  right: 0; /* Alterado de "left" para "right" */
+  bottom: 0;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  margin-bottom: 10px;
+}
+
+.sidebar button {
+  margin-bottom: 10px;
+  margin-left: 10px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Estilos para as propriedades dos triângulos */
+.triangle-properties {
+  margin-top: 20px;
+}

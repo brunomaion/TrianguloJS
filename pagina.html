@@ -1,13 +1,26 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Desenhar um Pixel com Canvas</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CG1 - Triângulo RGB incremental</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <canvas id="canvas" width="800" height="600"></canvas>
+  <div class="sidebar">
+    <ul>
+      <!-- Lista para os triângulos -->
+      <ul id="trianglesList"></ul>
+    </ul>
+  </div>
 
-  <script src="script.js"></script>
+  <div id="canvasContainer">
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <div id="btnContainer">
+      <button id="addTriangleBtn">Adicionar Triângulo</button>
+      <button id="deleteTriangleBtn">Excluir Triângulo</button>
+    </div>
+  </div>
+    <script src="script.js"></script>
 </body>
 </html>
