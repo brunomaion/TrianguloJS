@@ -98,9 +98,7 @@ class Triangulo {
     
     let vetorEsq = maisEsquerda(v1, v2, v3);
     let vetor = maisAlto(vetorEsq[0],vetorEsq[1],vetorEsq[2])
-    
-    console.log(vetor);
-
+  
 
     return vetor;
   }
@@ -118,9 +116,6 @@ class Triangulo {
   calcVetorAresta(p1,p2){
     
     let taxaX = this.calcularTaxaX(p1,p2);
-    console.log(taxaX);
-    console.log(p1);
-    console.log(p2);
 
     let pontoAresta = []
     let vetorAresta = []
@@ -160,13 +155,13 @@ class Triangulo {
   //DESENHAR
   pintarTriangulo(triangulo) {
     let scanVetor = this.scanLines(triangulo)
-    for (let y = 1; y < triangulo.nScans-1; y++) {
-      if(scanVetor[y][0] != scanVetor[y][1]){
-        for (let x = scanVetor[y][0]; x < scanVetor[y][1]; x++) {
+    console.log(scanVetor);
+    for (let y = 0; y < triangulo.nScans-1; y++) {
+        for (let x = scanVetor[y][0]+1; x < scanVetor[y][1]; x++) { //scanVector [minX, maX]
           ctx.fillStyle = 'pink';
           ctx.fillRect(x, y+triangulo.minY, 1, 1);
         }
-      }
+      
     }
   }
 
@@ -176,7 +171,7 @@ class Triangulo {
     //console.log(tamanhoAresta);
     let x, y;
     if(aresta!=0){
-      for (let i = 0; i < tamanhoAresta-1; i++) {
+      for (let i = 1; i < tamanhoAresta-1; i++) {
         x = aresta[i][0];
         y = aresta[i][1];
         ctx.fillStyle = this.corAresta;
@@ -204,39 +199,43 @@ class Triangulo {
     let tamAresta = aresta.length;
     let novoVetor = [];
 
-    if (aresta.length===this.nScans){ // SE FIR TAMANHO DA SCAN LINE
-      //console.log('nao complementar');
-      for (let i = 0; i < tamAresta; i++) {
-        novoVetor.push(aresta[i][0])
+    if (tamAresta===0){
+      novoVetor == [];
+    } else {
+
+      if (aresta.length===this.nScans){ // SE FIR TAMANHO DA SCAN LINE
+        //console.log('nao complementar');
+        for (let i = 0; i < tamAresta; i++) {
+          novoVetor.push(aresta[i][0])
+        }
       }
+      else if (aresta[0][1]===this.minY){ //PONTO INICIAL NO MIN
+        //console.log('complementar no final');
+        let complemento = this.nScans-tamAresta;
+  
+        //PRIMEIRO VETOR
+        for (let i = 0; i < tamAresta; i++) {
+          novoVetor.push(aresta[i][0])
+        }
+        //DPS COMPLEMENTO
+        for (let i = 0; i < complemento; i++) {
+          novoVetor.push(NaN)
+        }
+  
+      }
+      else if (aresta[tamAresta-1][1]===(this.maxY-1)){ // PONTO FINAL NO MAX
+        let complemento = this.nScans-tamAresta;
+        //PRIMEIRO COMPLEMENTO 
+        for (let i = 0; i < complemento; i++) {
+          novoVetor.push(NaN)
+        }
+        //DPS VETOR
+        for (let i = 0; i < tamAresta; i++) {
+          novoVetor.push(aresta[i][0])
+        }
+  
+      } 
     }
-    else if (aresta[0][1]===this.minY){ //PONTO INICIAL NO MIN
-      //console.log('complementar no final');
-      let complemento = this.nScans-tamAresta;
-
-      //PRIMEIRO VETOR
-      for (let i = 0; i < tamAresta; i++) {
-        novoVetor.push(aresta[i][0])
-      }
-      //DPS COMPLEMENTO
-      for (let i = 0; i < complemento; i++) {
-        novoVetor.push(NaN)
-      }
-
-    }
-    else if (aresta[tamAresta-1][1]===(this.maxY-1)){ // PONTO FINAL NO MAX
-      let complemento = this.nScans-tamAresta;
-      //PRIMEIRO COMPLEMENTO 
-      for (let i = 0; i < complemento; i++) {
-        novoVetor.push(NaN)
-      }
-      //DPS VETOR
-      for (let i = 0; i < tamAresta; i++) {
-        novoVetor.push(aresta[i][0])
-      }
-
-    } 
-
 
     return novoVetor;
   }
@@ -293,9 +292,10 @@ function createTriangulo(x1, y1, x2, y2, x3, y3){
 
 // TESTES
 function testeTriangulo(){
-  const trianguloExemplo = createTriangulo(500, 450, 80, 450, 80, 10);
+  const trianguloExemplo = createTriangulo(500, 450, 0, 450, 250, 0);
   //trianguloExemplo.corAresta ='red'
   //trianguloExemplo.desenharTriangulo(trianguloExemplo)
+  trianguloExemplo.desenharTodasArestas(trianguloExemplo)
   trianguloExemplo.pintarTriangulo(trianguloExemplo)
   //console.log(trianguloExemplo.aresta12);
   //console.log(trianguloExemplo.aresta13);
