@@ -5,12 +5,13 @@ const ctx = canvas.getContext("2d");
 
 class Triangulo {
   constructor(v1, v2, v3) {
-    this.v1 = this.ordenarPontosF(v1, v2, v3)[0];
-    this.v2 = this.ordenarPontosF(v1, v2, v3)[1];
-    this.v3 = this.ordenarPontosF(v1, v2, v3)[2];
-    this.aresta12 = this.calcVetorAresta(v1,v2);
-    this.aresta13 = this.calcVetorAresta(v1,v3);
-    this.aresta23 = this.calcVetorAresta(v2,v3);
+    this.vetorOrdenado = this.ordenarPontosF(v1, v2, v3)
+    this.v1 = this.vetorOrdenado[0];
+    this.v2 = this.vetorOrdenado[1];
+    this.v3 = this.vetorOrdenado[2];
+    this.aresta12 = this.calcVetorAresta(this.v1,this.v2);
+    this.aresta13 = this.calcVetorAresta(this.v1,this.v3);
+    this.aresta23 = this.calcVetorAresta(this.v2,this.v3);
 
     this.minX = this.boxEnvolvente()[0];
     this.maxX = this.boxEnvolvente()[1];
@@ -19,43 +20,89 @@ class Triangulo {
 
     this.nScans = this.maxY-this.minY; // numero scanLines
 
+    //CORES
+    this.corAresta = this.rgb(0, 0, 0); //'black';
+    this.corV1 = 'red';
+    this.corV2 = 'green';
+    this.corV3 = 'blue';
+    
+  }
+
+  rgb(r, g, b) {
+    return "rgb(" + r + "," + g + "," + b + ")";
   }
 
   ordenarPontosF(v1, v2, v3){  //COLOCAR O PONTO MAIS ALTO EM 1 e o MAIS BAIXO EM 3- SE FOR IGUAL PREFERENCIA DA ORDEM
+    /*
+    1 2 3
+    1 3 2
+    2 1 3
+    2 3 1
+    3 1 2
+    3 2 1
+    */
 
-    let pontoAlto = maisAltoEsq(v1, maisAltoEsq(v2, v3))
-    let pontoMedio;
-    let pontoBaixo;
-  
-    function maisAltoEsq(p1, p2){
-      if (p1[1]<=p2[1]){ // mais alto
-        if (p1[1]==p2[1] && p1[0]>p2[0]){ //mesmo Y com X dif
-          return p2;
-        }
-        return p1;
+    function maisEsquerda(p1, p2, p3){
+      
+      if (p1[0] <= p2[0] && p1[0] <= p3[0]){ // mais alto  0==X; 1==Y
+          if (p2[0]<=p3[0]) {
+            return [p1, p2, p3];
+
+          } else {
+            return [p1, p3, p2];
+
+          }
+
+      } else if (p2[0] <= p1[0] && p2[0] <= p3[0]){ // mais alto  0==X; 1==Y
+          if (p1[0]<=p3[0]) {
+            return [p2, p1, p3];
+          } else {
+            return [p2, p3, p1];
+          }
+      } else if (p3[0] <= p1[0] && p3[0] <= p2[0]){ // mais alto  0==X; 1==Y
+          if (p1[0]<=p2[0]) {
+            return [p3, p1, p2];
+          } else {
+            return [p3, p2, p1];
+          }
       } 
-      else{
-        return p2;
-      }
     } 
-  
-    if (pontoAlto == v1){
-      pontoMedio = maisAltoEsq(v2, v3);
-    } else if(pontoAlto == v2){
-      pontoMedio = maisAltoEsq(v1, v3);
-    } else { //pontoAlto == v3
-      pontoMedio = maisAltoEsq(v1, v2);
-    }
-  
-    if (pontoAlto !== v1 && pontoMedio !== v1) {
-        pontoBaixo = v1;
-    } else if (pontoAlto !== v2 && pontoMedio !== v2) {
-        pontoBaixo = v2;
-    } else {
-        pontoBaixo = v3;
-    }
-  
-    return [pontoAlto, pontoMedio, pontoBaixo];
+
+    function maisAlto(p1, p2, p3){
+
+      
+    
+      if (p1[1] <= p2[1] && p1[1] <= p3[1]){ // mais alto  0==X; 1==Y
+
+          if (p2[1]<=p3[1]) {
+            return [p1, p2, p3];
+          } else {
+            return [p1, p3, p2];
+    
+          }
+    
+      } else if (p2[1] <= p1[1] && p2[1] <= p3[1]){ // mais alto  0==X; 1==Y
+          if (p1[1]<=p3[1]) {
+            return [p2, p1, p3];
+          } else {
+            return [p2, p3, p1];
+          }
+      } else if (p3[1] <= p1[1] && p3[1] <= p2[1]){ // mais alto  0==X; 1==Y
+          if (p1[1]<=p2[1]) {
+            return [p3, p1, p2];
+          } else {
+            return [p3, p2, p1];
+          }
+      } 
+    } 
+    
+    let vetorEsq = maisEsquerda(v1, v2, v3);
+    let vetor = maisAlto(vetorEsq[0],vetorEsq[1],vetorEsq[2])
+    
+    console.log(vetor);
+
+
+    return vetor;
   }
   
   boxEnvolvente(){
@@ -69,31 +116,51 @@ class Triangulo {
   }
 
   calcVetorAresta(p1,p2){
+    
     let taxaX = this.calcularTaxaX(p1,p2);
+    console.log(taxaX);
+    console.log(p1);
+    console.log(p2);
+
     let pontoAresta = []
     let vetorAresta = []
     let x, y;
     x = p1[0]
+
     for (y = p1[1]; y < p2[1]; y++) {
       pontoAresta = [Math.round(x), y]   //ARRENDONDAR
       x += taxaX;
       vetorAresta.push(pontoAresta)
     }
+
+    //console.log(vetorAresta);
     return vetorAresta;
   }
 
 
   calcularTaxaX(p1, p2){
+    let taxaX;
     let difX = p2[0] - p1[0];
     let difY = p2[1] - p1[1];
-    let taxaX = difX/difY;
+    if (difX=== 0 || difY===0){
+      taxaX = 0;
+      return 0;
+    }
+    taxaX = difX/difY;
     return taxaX;
+  }
+
+  calcularTaxaY(p1, p2){
+    let difX = p2[0] - p1[0];
+    let difY = p2[1] - p1[1];
+    let taxaY = difY/difX;
+    return taxaY;
   }
 
   //DESENHAR
   pintarTriangulo(triangulo) {
     let scanVetor = this.scanLines(triangulo)
-    for (let y = 1; y < triangulo.nScans; y++) {
+    for (let y = 1; y < triangulo.nScans-1; y++) {
       if(scanVetor[y][0] != scanVetor[y][1]){
         for (let x = scanVetor[y][0]; x < scanVetor[y][1]; x++) {
           ctx.fillStyle = 'pink';
@@ -105,13 +172,20 @@ class Triangulo {
 
   desenharAresta(aresta){
     let tamanhoAresta = aresta.length;
+    //console.log(aresta);
+    //console.log(tamanhoAresta);
     let x, y;
-    for (let i = 0; i < tamanhoAresta; i++) {
-      x = aresta[i][0];
-      y = aresta[i][1];
-      ctx.fillStyle = 'black';
-      ctx.fillRect(x, y, 1, 1);
-    } 
+    if(aresta!=0){
+      for (let i = 0; i < tamanhoAresta-1; i++) {
+        x = aresta[i][0];
+        y = aresta[i][1];
+        ctx.fillStyle = this.corAresta;
+        ctx.fillRect(x, y, 1, 1);
+      } 
+    } else{
+      //console.log('Nao Desenhar Aresta! X IGUAL');
+    }
+
   }
 
   desenharTodasArestas(triangulo){
@@ -219,8 +293,13 @@ function createTriangulo(x1, y1, x2, y2, x3, y3){
 
 // TESTES
 function testeTriangulo(){
-  const trianguloExemplo = createTriangulo(5, 10, 5, 450, 500, 500);
-  trianguloExemplo.desenharTriangulo(trianguloExemplo)
+  const trianguloExemplo = createTriangulo(500, 450, 80, 450, 80, 10);
+  //trianguloExemplo.corAresta ='red'
+  //trianguloExemplo.desenharTriangulo(trianguloExemplo)
+  trianguloExemplo.pintarTriangulo(trianguloExemplo)
+  //console.log(trianguloExemplo.aresta12);
+  //console.log(trianguloExemplo.aresta13);
+  //console.log(trianguloExemplo.aresta23);
 }
 
 testeTriangulo()
