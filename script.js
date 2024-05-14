@@ -382,7 +382,7 @@ function criarBotaoTriangulo(triangulo, index) {
   const botao = document.createElement("button");
   botao.textContent = `Triângulo ${index + 1}`;
   botao.addEventListener("click", function() {
-    exibirPropriedadesTriangulo(triangulo);
+    exibirPropriedadesTriangulo(triangulo, index);
   });
   lista.appendChild(botao);
 
@@ -394,26 +394,23 @@ function criarBotaoTriangulo(triangulo, index) {
   lista.appendChild(botaoExcluir);
 }
 
-// Adicione esta função para exibir as propriedades do triângulo ao clicar em um botão
-function exibirPropriedadesTriangulo(triangulo) {
-  alert(`Propriedades do Triângulo:
-    V1: (${triangulo.v1[0]}, ${triangulo.v1[1]})
-    V2: (${triangulo.v2[0]}, ${triangulo.v2[1]})
-    V3: (${triangulo.v3[0]}, ${triangulo.v3[1]})`);
-}
 
-// Modifique sua função renderizarTriangulo para criar os botões na barra lateral
 function renderizarTriangulo(listaTriangulos) {
   const lista = document.getElementById("trianglesList");
-  lista.innerHTML = ""; // Limpa a lista antes de adicionar os botões
-
+  const propriedadesDiv = document.getElementById("triangleProperties");
+  const canvas = document.getElementById("canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  lista.innerHTML = "";
+  propriedadesDiv.innerHTML = "";
   for (let i = 0; i < listaTriangulos.length; i++) {
     listaTriangulos[i].pintarTriangulo(listaTriangulos[i]);
     listaTriangulos[i].desenharTodasArestas(listaTriangulos[i]);
     criarBotaoTriangulo(listaTriangulos[i], i); // Cria um botão para cada triângulo
   }
 }
-// BOTOES
+
+
 var botaoAddTriangulo = document.getElementById("addTriangleBtn");
 botaoAddTriangulo.addEventListener("click", function() {
   var pontosCapturados = [];
@@ -435,16 +432,89 @@ botaoAddTriangulo.addEventListener("click", function() {
 });
 
 function excluirTriangulo(index) {
-  // Remover o triângulo da lista com base no índice
   listaTriangulos.splice(index, 1);
-  // Limpar a lista de botões na barra lateral
   const lista = document.getElementById("trianglesList");
   lista.innerHTML = "";
-  // Recarregar os botões na barra lateral
     ctx.clearRect(0, 0, canvas.width, canvas.height);
   listaTriangulos.forEach((triangulo, index) => {
     criarBotaoTriangulo(triangulo, index);
     triangulo.desenharTriangulo(triangulo);
   });
   console.log("Triângulo excluído");
+}
+
+function exibirPropriedadesTriangulo(triangulo, index) {
+  const propriedadesDiv = document.getElementById("triangleProperties");
+  propriedadesDiv.innerHTML = ""; // Limpa a div antes de adicionar os novos elementos
+
+  const form = document.createElement("form");
+  
+  const v1Label = document.createElement("label");
+  v1Label.textContent = "V1: ";
+  const v1InputX = document.createElement("input");
+  v1InputX.type = "number";
+  v1InputX.value = triangulo.v1[0];
+  const v1InputY = document.createElement("input");
+  v1InputY.type = "number";
+  v1InputY.value = triangulo.v1[1];
+  
+  const v2Label = document.createElement("label");
+  v2Label.textContent = "V2: ";
+  const v2InputX = document.createElement("input");
+  v2InputX.type = "number";
+  v2InputX.value = triangulo.v2[0];
+  const v2InputY = document.createElement("input");
+  v2InputY.type = "number";
+  v2InputY.value = triangulo.v2[1];
+  
+  const v3Label = document.createElement("label");
+  v3Label.textContent = "V3: ";
+  const v3InputX = document.createElement("input");
+  v3InputX.type = "number";
+  v3InputX.value = triangulo.v3[0];
+  const v3InputY = document.createElement("input");
+  v3InputY.type = "number";
+  v3InputY.value = triangulo.v3[1];
+
+  const salvarButton = document.createElement("button");
+  salvarButton.textContent = "Salvar";
+  salvarButton.type = "button";
+  salvarButton.addEventListener("click", function() {
+    triangulo.v1 = [parseInt(v1InputX.value), parseInt(v1InputY.value)];
+    triangulo.v2 = [parseInt(v2InputX.value), parseInt(v2InputY.value)];
+    triangulo.v3 = [parseInt(v3InputX.value), parseInt(v3InputY.value)];
+    triangulo.vetorOrdenado = triangulo.ordenarPontosF(triangulo.v1, triangulo.v2, triangulo.v3);
+    triangulo.v1 = triangulo.vetorOrdenado[0];
+    triangulo.v2 = triangulo.vetorOrdenado[1];
+    triangulo.v3 = triangulo.vetorOrdenado[2];
+    triangulo.aresta12 = triangulo.calcVetorAresta(triangulo.v1, triangulo.v2, triangulo.corV1, triangulo.corV2);
+    triangulo.aresta13 = triangulo.calcVetorAresta(triangulo.v1, triangulo.v3, triangulo.corV1, triangulo.corV3);
+    triangulo.aresta23 = triangulo.calcVetorAresta(triangulo.v2, triangulo.v3, triangulo.corV2, triangulo.corV3);
+    triangulo.minX = triangulo.boxEnvolvente()[0];
+    triangulo.maxX = triangulo.boxEnvolvente()[1];
+    triangulo.minY = triangulo.boxEnvolvente()[2];
+    triangulo.maxY = triangulo.boxEnvolvente()[3];
+    triangulo.nScans = triangulo.maxY - triangulo.minY;
+    
+    renderizarTriangulo(listaTriangulos);
+  });
+
+  form.appendChild(v1Label);
+  form.appendChild(v1InputX);
+  form.appendChild(v1InputY);
+  form.appendChild(document.createElement("br"));
+  
+  form.appendChild(v2Label);
+  form.appendChild(v2InputX);
+  form.appendChild(v2InputY);
+  form.appendChild(document.createElement("br"));
+  
+  form.appendChild(v3Label);
+  form.appendChild(v3InputX);
+  form.appendChild(v3InputY);
+  form.appendChild(document.createElement("br"));
+  
+  form.appendChild(salvarButton);
+
+  propriedadesDiv.appendChild(form);
 }
