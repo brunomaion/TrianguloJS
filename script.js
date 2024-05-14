@@ -353,13 +353,11 @@ class Triangulo {
 
 }
 
-
 //CONSTRUIR TRIANGULO
 function createTriangulo(x1, y1, x2, y2, x3, y3){
   let triangulo = new Triangulo([x1, y1], [x2, y2], [x3, y3])
   return triangulo;
 }
-
 
 //INTERFACE
 var listaTriangulos = []
@@ -374,7 +372,6 @@ function adicionarTrianguloNovo(pontosCapturados){
   );
   listaTriangulos.push(triangulo);
 }
-
 // Adicione esta função para criar botões na barra lateral
 function criarBotaoTriangulo(triangulo, index) {
   const lista = document.getElementById("trianglesList");
@@ -393,7 +390,6 @@ function criarBotaoTriangulo(triangulo, index) {
   lista.appendChild(botaoExcluir);
 }
 
-
 function renderizarTriangulo(listaTriangulos) {
   const lista = document.getElementById("trianglesList");
   const propriedadesDiv = document.getElementById("triangleProperties");
@@ -408,7 +404,6 @@ function renderizarTriangulo(listaTriangulos) {
     criarBotaoTriangulo(listaTriangulos[i], i); // Cria um botão para cada triângulo
   }
 }
-
 
 var botaoAddTriangulo = document.getElementById("addTriangleBtn");
 botaoAddTriangulo.addEventListener("click", function() {
