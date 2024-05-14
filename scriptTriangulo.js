@@ -11,10 +11,10 @@ class Triangulo {
     this.v3 = this.vetorOrdenado[2];
 
     //CORES
-    this.corV1 = [255,0,0]
-    this.corV2 = [0,255,0]
-    this.corV3 = [0,0,255]
-
+    this.corV1 = [255,0,0];
+    this.corV2 = [0,255,0];
+    this.corV3 = [0,0,255];
+    this.corArestas = [0,0,0];
 
     this.aresta12 = this.calcVetorAresta(this.v1,this.v2, this.corV1, this.corV2);
     this.aresta13 = this.calcVetorAresta(this.v1,this.v3, this.corV1, this.corV3);
@@ -199,17 +199,18 @@ class Triangulo {
     }
   }
 
-  desenharAresta(aresta){
+  desenharAresta(aresta, cor){
     let tamanhoAresta = aresta.length;
     let x, y;
 
-    
+    console.log(cor);
     if(aresta!=0){
+
       for (let i = 0; i < tamanhoAresta-1; i++) {
         x = aresta[i][0];
         y = aresta[i][1];
-        ctx.fillStyle = this.rgb(aresta[i][2][0],aresta[i][2][1],aresta[i][2][2]);
-        ctx.fillStyle = 'black'
+        ctx.fillStyle = this.rgb(cor[0], cor[1], cor[2]);
+        //ctx.fillStyle = 'black'
         ctx.fillRect(x, y, 1, 1);
       } 
     } else{
@@ -220,9 +221,10 @@ class Triangulo {
   }
 
   desenharTodasArestas(triangulo){
-    this.desenharAresta(triangulo.aresta12)
-    this.desenharAresta(triangulo.aresta13)
-    this.desenharAresta(triangulo.aresta23)
+
+    this.desenharAresta(triangulo.aresta12, triangulo.corArestas)
+    this.desenharAresta(triangulo.aresta13, triangulo.corArestas)
+    this.desenharAresta(triangulo.aresta23, triangulo.corArestas)
   }
 
   desenharTriangulo(triangulo) {

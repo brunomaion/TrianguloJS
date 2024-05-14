@@ -14,6 +14,7 @@ class Triangulo {
     this.corV1 = [255,0,0]
     this.corV2 = [0,255,0]
     this.corV3 = [0,0,255]
+    this.corArestas = [0,0,0]
 
 
     this.aresta12 = this.calcVetorAresta(this.v1,this.v2, this.corV1, this.corV2);
@@ -199,7 +200,7 @@ class Triangulo {
     }
   }
 
-  desenharAresta(aresta){
+  desenharAresta(aresta, cor){
     let tamanhoAresta = aresta.length;
     let x, y;
 
@@ -208,8 +209,8 @@ class Triangulo {
       for (let i = 0; i < tamanhoAresta-1; i++) {
         x = aresta[i][0];
         y = aresta[i][1];
-        ctx.fillStyle = this.rgb(aresta[i][2][0],aresta[i][2][1],aresta[i][2][2]);
-        ctx.fillStyle = 'black'
+        //ctx.fillStyle = this.rgb(aresta[i][2][0],aresta[i][2][1],aresta[i][2][2]);
+        ctx.fillStyle = this.rgb(cor[0], cor[1], cor[2]);
         ctx.fillRect(x, y, 1, 1);
       } 
     } else{
@@ -220,9 +221,9 @@ class Triangulo {
   }
 
   desenharTodasArestas(triangulo){
-    this.desenharAresta(triangulo.aresta12)
-    this.desenharAresta(triangulo.aresta13)
-    this.desenharAresta(triangulo.aresta23)
+    this.desenharAresta(triangulo.aresta12, triangulo.corArestas)
+    this.desenharAresta(triangulo.aresta13, triangulo.corArestas)
+    this.desenharAresta(triangulo.aresta23, triangulo.corArestas)
   }
 
   desenharTriangulo(triangulo) {
@@ -353,16 +354,14 @@ class Triangulo {
 }
 
 
-//CONSTROI TRIANGULO
+//CONSTRUIR TRIANGULO
 function createTriangulo(x1, y1, x2, y2, x3, y3){
   let triangulo = new Triangulo([x1, y1], [x2, y2], [x3, y3])
   return triangulo;
 }
 
 
-// TESTES
-
-
+//INTERFACE
 var listaTriangulos = []
 function adicionarTrianguloNovo(pontosCapturados){
   const triangulo = createTriangulo( 
@@ -457,6 +456,9 @@ function exibirPropriedadesTriangulo(triangulo, index) {
   const v1InputY = document.createElement("input");
   v1InputY.type = "number";
   v1InputY.value = triangulo.v1[1];
+  const v1InputColor = document.createElement("input");
+  v1InputColor.type = "color";
+  v1InputColor.value = "#" + triangulo.corV1.map(componente => componente.toString(16).padStart(2, '0')).join('');
   
   const v2Label = document.createElement("label");
   v2Label.textContent = "V2: ";
@@ -466,6 +468,10 @@ function exibirPropriedadesTriangulo(triangulo, index) {
   const v2InputY = document.createElement("input");
   v2InputY.type = "number";
   v2InputY.value = triangulo.v2[1];
+  const v2InputColor = document.createElement("input");
+  v2InputColor.type = "color";
+  v2InputColor.value = "#" + triangulo.corV2.map(componente => componente.toString(16).padStart(2, '0')).join('');
+
   
   const v3Label = document.createElement("label");
   v3Label.textContent = "V3: ";
@@ -475,14 +481,27 @@ function exibirPropriedadesTriangulo(triangulo, index) {
   const v3InputY = document.createElement("input");
   v3InputY.type = "number";
   v3InputY.value = triangulo.v3[1];
+  const v3InputColor = document.createElement("input");
+  v3InputColor.type = "color";
+  v3InputColor.value = "#" + triangulo.corV3.map(componente => componente.toString(16).padStart(2, '0')).join('');
+
+  const corArestaLabel = document.createElement("label");
+  corArestaLabel.textContent = "Cor da aresta: ";
+  const corArestaInputColor = document.createElement("input");
+  corArestaInputColor.type = "color";
+  corArestaInputColor.value = "#" + triangulo.corArestas.map(componente => componente.toString(16).padStart(2, '0')).join('');
 
   const salvarButton = document.createElement("button");
   salvarButton.textContent = "Salvar";
   salvarButton.type = "button";
   salvarButton.addEventListener("click", function() {
     triangulo.v1 = [parseInt(v1InputX.value), parseInt(v1InputY.value)];
+    triangulo.corV1 = [parseInt(v1InputColor.value.slice(1, 3), 16), parseInt(v1InputColor.value.slice(3, 5), 16), parseInt(v1InputColor.value.slice(5, 7), 16)];
     triangulo.v2 = [parseInt(v2InputX.value), parseInt(v2InputY.value)];
+    triangulo.corV2 = [parseInt(v2InputColor.value.slice(1, 3), 16), parseInt(v2InputColor.value.slice(3, 5), 16), parseInt(v2InputColor.value.slice(5, 7), 16)];
     triangulo.v3 = [parseInt(v3InputX.value), parseInt(v3InputY.value)];
+    triangulo.corV3 = [parseInt(v3InputColor.value.slice(1, 3), 16), parseInt(v3InputColor.value.slice(3, 5), 16), parseInt(v3InputColor.value.slice(5, 7), 16)];
+    triangulo.corArestas = [parseInt(corArestaInputColor.value.slice(1, 3), 16), parseInt(corArestaInputColor.value.slice(3, 5), 16), parseInt(corArestaInputColor.value.slice(5, 7), 16)];
     triangulo.vetorOrdenado = triangulo.ordenarPontosF(triangulo.v1, triangulo.v2, triangulo.v3);
     triangulo.v1 = triangulo.vetorOrdenado[0];
     triangulo.v2 = triangulo.vetorOrdenado[1];
@@ -502,16 +521,23 @@ function exibirPropriedadesTriangulo(triangulo, index) {
   form.appendChild(v1Label);
   form.appendChild(v1InputX);
   form.appendChild(v1InputY);
+  form.appendChild(v1InputColor);
   form.appendChild(document.createElement("br"));
-  
+
   form.appendChild(v2Label);
   form.appendChild(v2InputX);
   form.appendChild(v2InputY);
+  form.appendChild(v2InputColor);
   form.appendChild(document.createElement("br"));
   
   form.appendChild(v3Label);
   form.appendChild(v3InputX);
   form.appendChild(v3InputY);
+  form.appendChild(v3InputColor);
+  form.appendChild(document.createElement("br"));
+  
+  form.appendChild(corArestaLabel);
+  form.appendChild(corArestaInputColor);
   form.appendChild(document.createElement("br"));
   
   form.appendChild(salvarButton);
