@@ -4,7 +4,10 @@ const ctx = canvas.getContext("2d");
 //PONTOS FINAIS DA ARESTAS
 
 class Triangulo {
-  constructor(v1, v2, v3) {
+  constructor(v1, v2, v3, nome) {
+
+    this.nome = nome
+
     this.vetorOrdenado = this.ordenarPontosF(v1, v2, v3)
     this.v1 = this.vetorOrdenado[0];
     this.v2 = this.vetorOrdenado[1];
@@ -354,14 +357,14 @@ class Triangulo {
 }
 
 //CONSTRUIR TRIANGULO
-function createTriangulo(x1, y1, x2, y2, x3, y3){
-  let triangulo = new Triangulo([x1, y1], [x2, y2], [x3, y3])
+function createTriangulo(x1, y1, x2, y2, x3, y3, nome){
+  let triangulo = new Triangulo([x1, y1], [x2, y2], [x3, y3], nome)
   return triangulo;
 }
 
 //INTERFACE
 var listaTriangulos = []
-function adicionarTrianguloNovo(pontosCapturados){
+function adicionarTrianguloNovo(pontosCapturados, nome){
   const triangulo = createTriangulo( 
     pontosCapturados[0][0], 
     pontosCapturados[0][1], 
@@ -369,6 +372,7 @@ function adicionarTrianguloNovo(pontosCapturados){
     pontosCapturados[1][1], 
     pontosCapturados[2][0], 
     pontosCapturados[2][1], 
+    nome
   );
   listaTriangulos.push(triangulo);
 }
@@ -376,7 +380,7 @@ function adicionarTrianguloNovo(pontosCapturados){
 function criarBotaoTriangulo(triangulo, index) {
   const lista = document.getElementById("trianglesList");
   const botao = document.createElement("button");
-  botao.textContent = `Triângulo ${index + 1}`;
+  botao.textContent = String(triangulo.nome);
   botao.addEventListener("click", function() {
     exibirPropriedadesTriangulo(triangulo, index);
   });
@@ -385,7 +389,7 @@ function criarBotaoTriangulo(triangulo, index) {
   const botaoExcluir = document.createElement("button");
   botaoExcluir.textContent = `Excluir`;
   botaoExcluir.addEventListener("click", function() {
-    excluirTriangulo();
+    excluirTriangulo(triangulo.nome);
   });
   lista.appendChild(botaoExcluir);
 }
@@ -404,7 +408,7 @@ function renderizarTriangulo(listaTriangulos) {
     criarBotaoTriangulo(listaTriangulos[i], i); // Cria um botão para cada triângulo
   }
 }
-
+var contTri = 0;
 var botaoAddTriangulo = document.getElementById("addTriangleBtn");
 botaoAddTriangulo.addEventListener("click", function() {
   var pontosCapturados = [];
@@ -412,6 +416,8 @@ botaoAddTriangulo.addEventListener("click", function() {
 
   canvas.addEventListener("click", capturarPonto);
 
+  contTri++;
+  var nome = 'Triângulo' + String(contTri)
   function capturarPonto(event) {
     const x = event.offsetX;
     const y = event.offsetY;
@@ -419,17 +425,24 @@ botaoAddTriangulo.addEventListener("click", function() {
     pontosCapturadosCount++;
     if (pontosCapturadosCount === 3) {
       canvas.removeEventListener("click", capturarPonto);
-      adicionarTrianguloNovo(pontosCapturados);
+      adicionarTrianguloNovo(pontosCapturados, nome);
     }
     renderizarTriangulo(listaTriangulos);
   }
 });
 
-function excluirTriangulo(index) {
-  listaTriangulos.splice(index, 1);
+function excluirTriangulo(nomeExcluir) {
+  const index = listaTriangulos.findIndex(triangulo => triangulo.nome === nomeExcluir);
+  if (index !== -1) {
+      listaTriangulos.splice(index, 1);
+      renderizarTriangulo(listaTriangulos);
+      console.log(`Triângulo ${nomeExcluir} excluído`);
+  } else {
+      console.log(`Triângulo ${nomeExcluir} não encontrado`);
+  }
   const lista = document.getElementById("trianglesList");
   lista.innerHTML = "";
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   listaTriangulos.forEach((triangulo, index) => {
     criarBotaoTriangulo(triangulo, index);
     triangulo.desenharTriangulo(triangulo);
