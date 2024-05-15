@@ -194,7 +194,7 @@ class Triangulo {
       let taxaG = taxaCalculoCor(scanVetor[y][0], scanVetor[y][1], scanVetor[y][2][1], scanVetor[y][3][1])
       let taxaB = taxaCalculoCor(scanVetor[y][0], scanVetor[y][1], scanVetor[y][2][2], scanVetor[y][3][2])
       
-      for (let x = scanVetor[y][0]; x < scanVetor[y][1]; x++) { //scanVector [minX, maX]
+      for (let x = scanVetor[y][0]+1; x < scanVetor[y][1]; x++) { //scanVector [minX, maX]
         corPixel = this.rgb(corR+=taxaR, corG+=taxaG, corB+=taxaB)
         ctx.fillStyle = corPixel;
         ctx.fillRect(x, y+triangulo.minY, 1, 1);
