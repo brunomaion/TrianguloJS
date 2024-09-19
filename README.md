@@ -8,3 +8,5 @@ Trabalho para matéria de Computação Gráfica - 3º Ano Ciência da Computaç�
 ## Arquivo Principal
 - pagina.html
 - Implementado em JavaScript
+
+![image](https://github.com/user-attachments/assets/fad01a3c-1d7b-4c8d-b427-55b6439a86f1)
