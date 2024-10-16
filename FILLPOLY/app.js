@@ -18,8 +18,9 @@ class Poligono {
     draw(ctx) {
 
         let box = this.box
-        //console.log(box)
+        
 
+        /* PINTA BOX ENVOLVENTE
         for (let i = box[1]; i < box[3]; i++) {
             for (let j = box[0]; j < box[2]; j++) {
                 ctx.fillStyle = 'blue';
@@ -27,7 +28,10 @@ class Poligono {
             }
         }
 
+        */
+
         let arestas = this.arestas;
+
 
         for (let i = 0; i < arestas.length; i++) {
             let aresta = arestas[i];
@@ -46,7 +50,7 @@ class Poligono {
 
 
         let vetorScanLines = this.ScanLines;
-        let teste = [];
+        
         for (let i = 0; i < vetorScanLines.length; i++) 
         {
             let listaPontosX = vetorScanLines[i][1];
@@ -60,9 +64,14 @@ class Poligono {
                 console.log(listaOrdenada);
 
                 let tamanhoPontos = listaOrdenada.length;
-                if (tamanhoPontos%2==0) {
+                
+                
+                
+                if (tamanhoPontos%2==0) 
+                {
                     let repeticao = tamanhoPontos/2;
                     let index = 0
+                    
                     for (let k = 0; k < repeticao; k++) {
                         let pX0 = listaOrdenada[index];
                         let pX1 = listaOrdenada[index+1];
@@ -76,8 +85,7 @@ class Poligono {
                             ctx.fillRect(l, i, 1, 1);
     
                         }                        
-                    }
-                    
+                    } 
                 }
             }
             
@@ -99,7 +107,7 @@ class Poligono {
         for (let i = 0; i < ListaArestas.length; i++) // perccorre arestas
         { 
             let aresta = ListaArestas[i];
-            for (let j=0; j<aresta.length; j++) // percorre os elementos da arestas
+            for (let j=0; j<aresta.length-1; j++) // percorre os elementos da arestas // -1 pq comeca proxima aresta
             {
                 let pontoX = aresta[j][0];     
                 let pontoY = aresta[j][1];   
