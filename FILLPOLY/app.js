@@ -5,7 +5,8 @@ const addPolygonButton = document.getElementById('addPolygon');
 let drawing = false;
 let points = [];
 let polygons = [];  // Lista de todos os polígonos desenhados
-let resolucao = 400
+let resolucao = 700
+let idTriangulo = 1;
 
 class Poligono {
     constructor(pontos) {
@@ -13,6 +14,12 @@ class Poligono {
         this.arestas = this.listaArestas(this.pontos); 
         this.box = this.calcBoxEnvolvente(this.pontos);
         this.ScanLines = this.calcScanLines(this.box, this.arestas)
+        this.id = idTriangulo++;
+
+        // Define cores padrão
+        this.edgeColor = '#ffff00';  // Preto
+        this.fillColor = '#ff0000';  // Vermelho
+        this.paintEdge = true;
     }
 
     draw(ctx) {
@@ -33,19 +40,18 @@ class Poligono {
         let arestas = this.arestas;
 
 
-        for (let i = 0; i < arestas.length; i++) {
-            let aresta = arestas[i];
-            //console.log(aresta);
-            
-            //PINTA ARESTA
-            for (let j = 0; j < aresta.length; j++) {
-                let pontoX = aresta[j][0];
-                let pontoY = aresta[j][1];
-                ctx.fillStyle = 'black';
-                ctx.fillRect(pontoX, pontoY, 1, 1);
+        // Desenha as arestas do polígono apenas se `paintEdge` for true
+        if (this.paintEdge) {
+            for (let i = 0; i < arestas.length; i++) {
+                let aresta = arestas[i];
                 
+                for (let j = 0; j < aresta.length; j++) {
+                    let pontoX = aresta[j][0];
+                    let pontoY = aresta[j][1];
+                    ctx.fillStyle = this.edgeColor;  // Cor da aresta
+                    ctx.fillRect(pontoX, pontoY, 1, 1);
+                }
             }
-            
         }
 
 
@@ -61,7 +67,7 @@ class Poligono {
                 // Remove os números repetidos
                 //listaOrdenada = listaOrdenada.filter((value, index, self) => {return self.indexOf(value) === index;});
 
-                console.log(listaOrdenada);
+                //console.log(listaOrdenada);
 
                 let tamanhoPontos = listaOrdenada.length;
                 
@@ -81,7 +87,7 @@ class Poligono {
 
 
                         for (let l = pX0+1; l < pX1; l++) {
-                            ctx.fillStyle = 'red';  // Começa um novo caminho
+                            ctx.fillStyle = this.fillColor;  // Começa um novo caminho
                             ctx.fillRect(l, i, 1, 1);
     
                         }                        
@@ -134,7 +140,7 @@ class Poligono {
             listaAresta.push(aresta);
         }
 
-        p0 = pontos[pontos.length - 1]
+        p0 = pontos[pontos.length-1]
         p1 = pontos[0]
         aresta = [p0 , p1];
         listaAresta.push(aresta);
@@ -254,6 +260,7 @@ function addVertex(e) {
 
 // Função para obter a posição do mouse em relação ao canvas
 function getMousePosition(e) {
+    ctx.fillStyle = 'black'; 
     const rect = canvas.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -263,7 +270,7 @@ function getMousePosition(e) {
 // Função para desenhar um ponto
 function drawPoint(x, y) {
     ctx.beginPath();
-    ctx.arc(x, y, 3, 0, 2 * Math.PI);  // Desenha um ponto pequeno no local do clique
+    ctx.arc(x, y, 2, 0, 2 * Math.PI);  // Desenha um ponto pequeno no local do clique
     ctx.fill();
     ctx.closePath();
 }
@@ -279,6 +286,7 @@ function finalizePolygon(e) {
         polygons.push(polygon);  // Adiciona o novo polígono à lista
 
         redrawPolygons();  // Redesenha todos os polígonos
+        updatePolygonsList();  // Atualiza a lista de polígonos na sidebar
     }
 }
 
@@ -297,3 +305,78 @@ function clearCanvas() {
 addPolygonButton.addEventListener('click', startDrawing);
 canvas.addEventListener('click', addVertex);
 canvas.addEventListener('contextmenu', finalizePolygon);
+
+
+
+// Atualiza a lista de polígonos na sidebar
+function updatePolygonsList() {
+    const polygonsList = document.getElementById('polygonsList');
+    polygonsList.innerHTML = '';  // Limpa a lista existente
+
+    polygons.forEach(polygon => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `Polígono ${polygon.id}`;
+        listItem.classList.add('polygon-button');  // Adiciona a classe de botão
+        listItem.addEventListener('click', () => showPolygonProperties(polygon));
+        polygonsList.appendChild(listItem);
+    });
+}
+
+function showPolygonProperties(polygon) {
+    const polygonProperties = document.getElementById('polygonProperties');
+
+    // Exibe as propriedades do polígono com campos para alterar as cores e checkbox para pintar a aresta
+    polygonProperties.innerHTML = `
+        <h3>Propriedades - Polígono ${polygon.id}</h3>
+        <label for="paintEdge">Pintar Aresta:</label>
+        <input type="checkbox" id="paintEdge" ${polygon.paintEdge ? 'checked' : ''}><br>
+        <label for="edgeColor">Cor da aresta:</label>
+        <input type="color" id="edgeColor" value="${polygon.edgeColor || '#000000'}">
+        <br>
+        <label for="fillColor">Cor de preenchimento:</label>
+        <input type="color" id="fillColor" value="${polygon.fillColor || '#ff0000'}">
+        <br>
+        <button id="deletePolygonButton">Excluir Polígono</button>
+    `;
+
+    // Configura os valores de cores e o checkbox com os valores atuais
+    document.getElementById('paintEdge').checked = polygon.paintEdge ?? true;
+    document.getElementById('edgeColor').value = polygon.edgeColor || '#000000';
+    document.getElementById('fillColor').value = polygon.fillColor || '#ff0000';
+
+    // Adiciona event listener para alterar as propriedades
+    document.getElementById('paintEdge').addEventListener('change', (e) => {
+        polygon.paintEdge = e.target.checked;
+        redrawPolygons();  // Redesenha os polígonos com a nova configuração
+    });
+
+    document.getElementById('edgeColor').addEventListener('input', (e) => {
+        polygon.edgeColor = e.target.value;
+        redrawPolygons();  // Redesenha os polígonos com a nova cor
+    });
+
+    document.getElementById('fillColor').addEventListener('input', (e) => {
+        polygon.fillColor = e.target.value;
+        redrawPolygons();  // Redesenha os polígonos com a nova cor
+    });
+
+    // Adiciona o event listener para o botão de excluir
+    document.getElementById('deletePolygonButton').addEventListener('click', () => {
+        deletePolygon(polygon);
+    });
+}
+
+
+function deletePolygon(polygon) {
+    // Remove o polígono da lista de polígonos
+    polygons = polygons.filter(p => p.id !== polygon.id);
+
+    // Limpa as propriedades exibidas
+    document.getElementById('polygonProperties').innerHTML = '';
+
+    // Redesenha todos os polígonos no canvas
+    redrawPolygons();
+
+    // Atualiza a lista de polígonos na sidebar
+    updatePolygonsList();
+}

@@ -3,16 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desenho de Polígono</title>
-    <style>
-        canvas {
-            border: 1px solid black;
-        }
-    </style>
+    <title>Polígono</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <button id="addPolygon">Adicionar Polígono</button>
-    <canvas id="viewport" width="600" height="400"></canvas>
+    <div class="sidebar">
+        <ul>
+            <!-- Lista de polígonos -->
+            <div id="polygonsList"></div>
+            <div id="polygonProperties"></div>
+        </ul>
+    </div>
+
+    <div id="canvasContainer">
+        <canvas id="viewport" width="1100" height="700"></canvas>
+        <div id="btnContainer">
+            <button id="addPolygon">Adicionar Polígono</button>
+        </div>
+    </div>
 
     <script src="app.js"></script>
 </body>
